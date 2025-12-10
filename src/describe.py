@@ -6,7 +6,7 @@ pd.set_option('display.float_format', '{:.17g}'.format)
 
 def checkInput():
 	if len(sys.argv) != 2:
-		print("ERROR Usage: python describe.py <csv_file>")
+		print("ERROR Usage: python3 src/describe.py <csv_file>")
 		sys.exit(1)
 	filename = sys.argv[1]
 	if not filename.endswith('.csv'):
@@ -24,11 +24,19 @@ def readCSV(filename):
 
 def describeCount(column):
 	count = 0
+	nan_count = 0
+	zero_count = 0
+	tmp_unique_values = []
 	for value in column:
 		if pd.isna(value):
+			nan_count += 1
 			continue
+		if value == 0.0:
+			zero_count += 1
+		if value not in tmp_unique_values:
+			tmp_unique_values.append(value)
 		count += 1
-	return count
+	return {"count": count, "nan_count": nan_count, "zero_count": zero_count, "unique_count": len(tmp_unique_values)}
 
 def describeMean(column, count):
 	if count == 0:
@@ -83,16 +91,21 @@ def describeData(data):
 
 	for column in data.columns:
 		if (data[column].dtype == 'float64' or data[column].dtype == 'int64') and data[column].isna().all() == False:
-			describer.at['count', column] = describeCount(data[column])
+			count_info = describeCount(data[column])
+			describer.at['count', column] = count_info["count"]
+			describer.at['missing %', column] = (count_info["nan_count"] / (count_info["count"] + count_info["nan_count"])) * 100
+			describer.at['zero %', column] = (count_info["zero_count"] / (count_info["count"] + count_info["nan_count"])) * 100
+			describer.at['unique', column] = count_info["unique_count"]
 			describer.at['mean', column] = describeMean(data[column], describer.at['count', column])
 			describer.at['std', column] = describeStdDev(data[column], describer.at['mean', column], describer.at['count', column])
 			min_max_percentiles = DescribeMinMaxPercentiles(data[column])
 			for key, value in min_max_percentiles.items():
 				describer.at[key, column] = value
-	print(describer)
+	return describer
 
 def main():
-	describeData(readCSV(checkInput()))
+	describer = describeData(readCSV(checkInput()))
+	print(describer)
 
 if __name__ == "__main__":
 	main()
