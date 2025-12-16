@@ -2,7 +2,7 @@ import logging
 # logging.basicConfig(level=logging.DEBUG)
 
 import matplotlib.pyplot as plt
-import pandas as pd
+import seaborn as sns
 import math
 from describe import checkInput, readCSV
 
@@ -22,12 +22,14 @@ def main():
 	i = 0
 	axes = axes.flatten()
 	for column in numeric_columns:
-		axes[i].hist(data[column].dropna().astype(float).values, bins=50, color='blue', alpha=0.7)
+		sns.histplot(data=data, x=column, bins=50, hue="Hogwarts House", alpha=0.7, ax=axes[i], legend=False)
 		axes[i].set_title(f'Histogram of {column}')
 		axes[i].set_xlabel(column)
 		axes[i].set_ylabel('Frequency')
 		i += 1
-	
+
+	fig.legend(title='Hogwarts House', labels=data['Hogwarts House'].unique()[::-1], loc='lower right')
+
 	for j in range(i, max):
 		axes[j].axis('off')
 

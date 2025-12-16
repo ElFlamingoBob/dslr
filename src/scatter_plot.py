@@ -2,40 +2,28 @@ import logging
 # logging.basicConfig(level=logging.DEBUG)
 
 import matplotlib.pyplot as plt
-import pandas as pd
-import math
+import seaborn as sns
 from describe import checkInput, readCSV
 
-def main():
+if "__main__" == __name__:
 	data = readCSV(checkInput())
 
 	numeric_columns = [col for col in data.columns if (data[col].dtype == 'float64' or data[col].dtype == 'int64') and not data[col].isna().all() and col != 'Index']
 	if len(numeric_columns) == 0:
 		logging.error("No numeric columns found in the dataset to plot histograms.")
-		return
+		exit()
 	
-	
+	corr = data[numeric_columns].corr().abs()
+	corr = corr.unstack().sort_values(ascending=False).drop_duplicates()
 
-	
-	# cols = min(5, len(numeric_columns))
-	# rows = math.ceil(len(numeric_columns) / cols)
-	# max = rows * cols
+	for (col1, col2), value in corr.items():
+		if (value <= 1.0) and (col1 == col2):
+			corr = corr.drop((col1, col2))
 
-	# fig, axes = plt.subplots(nrows=rows, ncols=cols, figsize=(15, 9))
-	# i = 0
-	# axes = axes.flatten()
-	# for column in numeric_columns:
-	# 	axes[i].scatter(data[column].dropna().astype(float).values, data[column].dropna().astype(float).values, color='blue', alpha=1)
-	# 	axes[i].set_title(f'Scatter Plot of {column}')
-	# 	axes[i].set_xlabel(column)
-	# 	axes[i].set_ylabel(column)
-	# 	i += 1
-	
-	# for j in range(i, max):
-	# 	axes[j].axis('off')
+	fig, axes = plt.subplots(nrows= 1, ncols= 2, figsize=(10, 6))
+	axes[0].set_title('Most Correlated Features')
+	axes[1].set_title('Least Correlated Features')
+	sns.scatterplot(data=data, x=corr.index[0][0], y=corr.index[0][1], hue="Hogwarts House", palette="bright", alpha=0.7, ax=axes[0])
+	sns.scatterplot(data=data, x=corr.index[len(corr)- 1][0], y=corr.index[len(corr)- 1][1], hue="Hogwarts House", palette="bright", alpha=0.7, ax=axes[1], legend=False)
 
-	# plt.tight_layout()
 	plt.show()
-
-if "__main__" == __name__:
-	main()
