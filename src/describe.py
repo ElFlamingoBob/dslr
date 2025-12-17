@@ -105,6 +105,7 @@ def describeData(data):
 
 def main():
 	describer = describeData(readCSV(checkInput()))
+	describer.to_csv("describe_output.csv")
 	print(describer)
 
 if __name__ == "__main__":
