@@ -4,9 +4,9 @@ import sys
 
 pd.set_option('display.float_format', '{:.17g}'.format)
 
-def checkInput():
+def checkInput(filename):
 	if len(sys.argv) != 2:
-		print("ERROR Usage: python3 src/describe.py <csv_file>")
+		print(f"ERROR Usage: python3 src/{filename}.py <csv_file>")
 		sys.exit(1)
 	filename = sys.argv[1]
 	if not filename.endswith('.csv'):
@@ -104,7 +104,7 @@ def describeData(data):
 	return describer
 
 def main():
-	describer = describeData(readCSV(checkInput()))
+	describer = describeData(readCSV(checkInput("describe")))
 	describer.to_csv("describe_output.csv")
 	print(describer)
 

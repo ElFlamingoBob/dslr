@@ -6,7 +6,7 @@ import seaborn as sns
 from describe import checkInput, readCSV
 
 if "__main__" == __name__:
-	data = readCSV(checkInput())
+	data = readCSV(checkInput("scatter_plot"))
 
 	numeric_columns = [col for col in data.columns if (data[col].dtype == 'float64' or data[col].dtype == 'int64') and not data[col].isna().all() and col != 'Index']
 	if len(numeric_columns) == 0:

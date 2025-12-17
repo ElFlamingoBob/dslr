@@ -7,7 +7,7 @@ import math
 from describe import checkInput, readCSV
 
 def main():
-	data = readCSV(checkInput())
+	data = readCSV(checkInput("histogram"))
 
 	numeric_columns = [col for col in data.columns if (data[col].dtype == 'float64' or data[col].dtype == 'int64') and not data[col].isna().all() and col != 'Index']
 	if len(numeric_columns) == 0:
