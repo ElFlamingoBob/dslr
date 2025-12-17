@@ -31,7 +31,6 @@ if "__main__" == __name__:
 	# drop_columns = ['Index', 'Care of Magical Creatures', 'Arithmancy']
 	drop_columns = ['Index', 'Care of Magical Creatures', 'Arithmancy', "Potions", "Astronomy"]
 
-
 	numeric_columns = [col for col in data.columns if (data[col].dtype == 'float64' or data[col].dtype == 'int64') and not data[col].isna().all() and col not in drop_columns]
 	if len(numeric_columns) == 0:
 		logging.error("No numeric columns found in the dataset to plot histograms.")
@@ -59,5 +58,5 @@ if "__main__" == __name__:
 	output_df = pd.DataFrame({'Index': data['Index'], 'Hogwarts House': predicted_houses})
 	output_df.to_csv("houses.csv", index=False)
 
-
+	print("\033[32mPredictions saved to 'houses.csv'.\033[0m")
 	

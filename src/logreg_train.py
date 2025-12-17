@@ -40,7 +40,7 @@ def yMapping(y_column, id):
 			exit()
 	return y_column.map(mapping).to_numpy().reshape(-1, 1)
 
-def LogReg(X, y, id, alpha=0.01, num_iterations=10000):
+def gradientDescent(X, y, id, alpha=0.01, num_iterations=10000):
 	y = yMapping(y, id)
 	m, n = X.shape
 	theta = np.zeros((n, 1))
@@ -48,7 +48,6 @@ def LogReg(X, y, id, alpha=0.01, num_iterations=10000):
 	cost_history = []
 
 	for i in range(num_iterations):
-
 		h = hypothesis(X, theta)
 		gradient = np.dot(X.T, (h - y)) / m
 		theta = theta - ( alpha * gradient )
@@ -58,6 +57,29 @@ def LogReg(X, y, id, alpha=0.01, num_iterations=10000):
 			cost_history.append(cost)
 
 	return theta, cost_history
+
+
+def stochasticGradientDescent(X, y, id, alpha=0.01, epochs=10):
+	y = yMapping(y, id)
+	m, n = X.shape
+	theta = np.zeros((n, 1))
+
+	for epoch in range(epochs):
+
+		indices = np.random.permutation(m)
+		X_shuffled = X[indices]
+		y_shuffled = y[indices]
+
+		for i in range(m):
+
+			xi = X_shuffled[i].reshape(1, -1)
+			yi = y_shuffled[i].reshape(1, 1)
+
+			h = hypothesis(xi, theta)
+			gradient = np.dot(xi.T, (h - yi))
+			theta = theta - ( alpha * gradient )
+
+	return theta
 
 if "__main__" == __name__:
 	data = readCSV(checkInput("logreg_train"))
@@ -77,10 +99,17 @@ if "__main__" == __name__:
 	X = normalized_data.copy().to_numpy()
 	y_column = data['Hogwarts House']
 
-	theta_df = pd.DataFrame()
+	gd_theta_df = pd.DataFrame()
+	sgd_theta_df = pd.DataFrame()
 
 	for i in range(4):
-		theta, cost_history = LogReg(X, y_column, id=i, alpha=0.01, num_iterations=1000)
-		theta_df[f'Theta_{i}'] = theta.flatten()
+		theta, cost_history = gradientDescent(X, y_column, id=i, alpha=0.01, num_iterations=10000)
+		print("\033[30mGD Cost : " + str(cost_history[-1].flatten()[0]) + "\033[0m")
+		sgd_theta = stochasticGradientDescent(X, y_column, id=i, alpha=0.01, epochs=10)
+		gd_theta_df[f'Theta_{i}'] = theta.flatten()
+		sgd_theta_df[f'Theta_{i}'] = sgd_theta.flatten()
 
-	theta_df.to_csv("logreg_weights.csv", index=False)
+	sgd_theta_df.to_csv("sgd_weights.csv", index=False)
+	gd_theta_df.to_csv("gd_weights.csv", index=False)
+
+	print("\033[32mTraining completed. Weights saved to 'sgd_weights.csv' and 'gd_weights.csv'.\033[0m")

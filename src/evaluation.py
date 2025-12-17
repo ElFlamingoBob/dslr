@@ -33,8 +33,12 @@ if "__main__" == __name__:
 		print("ERROR The number of predictions does not match the number of true values")
 		sys.exit(1)
 
+	for i in range(len(true_houses)):
+		if (true_houses[i] != predicted_houses[i]):
+			print(f"\033[34mMismatch at index {i}: predicted {predicted_houses[i]}, true {true_houses[i]}\033[0m")
+
 	correct_predictions = np.sum(predicted_houses == true_houses)
 	total_predictions = len(true_houses)
 	accuracy = correct_predictions / total_predictions
 
-	print(f"Accuracy: {accuracy * 100:.2f}%")
+	print(f"\033[31mAccuracy: {accuracy * 100:.2f}%\033[0m")
