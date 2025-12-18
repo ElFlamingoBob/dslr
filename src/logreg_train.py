@@ -3,6 +3,7 @@ import logging
 
 import numpy as np
 import pandas as pd
+import matplotlib.pyplot as plt
 
 from describe import checkInput, readCSV
 
@@ -64,6 +65,8 @@ def stochasticGradientDescent(X, y, id, alpha=0.01, epochs=10):
 	m, n = X.shape
 	theta = np.zeros((n, 1))
 
+	cost_history = []
+
 	for epoch in range(epochs):
 
 		indices = np.random.permutation(m)
@@ -79,7 +82,30 @@ def stochasticGradientDescent(X, y, id, alpha=0.01, epochs=10):
 			gradient = np.dot(xi.T, (h - yi))
 			theta = theta - ( alpha * gradient )
 
-	return theta
+			if (i % 50 == 0):
+				cost = (-1) * ( yi.T * np.log(h) + (1 - yi).T * np.log(1 - h) )
+				cost_history.append(cost)
+
+
+	return theta, cost_history
+
+def plotCostHistory(cost_history):
+
+	fig, axes = plt.subplots(ncols=4, nrows=2, figsize=(18, 9))
+	axes = axes.flatten()
+	methods = ['Gradient Descent', 'Stochastic Gradient Descent']
+	houses = ['Gryffindor', 'Hufflepuff', 'Ravenclaw', 'Slytherin']
+	for i in range(4):
+		for j in range(2):
+			method_name = methods[j]
+			history_index = i * 2 + j
+			axes[history_index].plot(range(len(cost_history[history_index])), [cost.flatten()[0] for cost in cost_history[history_index]], color='blue')
+			axes[history_index].set_title(f'Cost History - {method_name} for {houses[i]}')
+			axes[history_index].set_xlabel('Iterations')
+			axes[history_index].set_ylabel('Cost')
+			axes[history_index].grid()
+	plt.tight_layout()
+	plt.show()
 
 if "__main__" == __name__:
 	data = readCSV(checkInput("logreg_train"))
@@ -102,12 +128,19 @@ if "__main__" == __name__:
 	gd_theta_df = pd.DataFrame()
 	sgd_theta_df = pd.DataFrame()
 
+	final_cost_history = []
+
 	for i in range(4):
 		theta, cost_history = gradientDescent(X, y_column, id=i, alpha=0.01, num_iterations=10000)
+		final_cost_history.append(cost_history)
 		print("\033[30mGD Cost : " + str(cost_history[-1].flatten()[0]) + "\033[0m")
-		sgd_theta = stochasticGradientDescent(X, y_column, id=i, alpha=0.01, epochs=10)
+		sgd_theta, sgd_cost_history = stochasticGradientDescent(X, y_column, id=i, alpha=0.01, epochs=10)
+		final_cost_history.append(sgd_cost_history)
+		print("\033[30mSGD Cost: " + str(sgd_cost_history[-1].flatten()[0]) + "\033[0m")
 		gd_theta_df[f'Theta_{i}'] = theta.flatten()
 		sgd_theta_df[f'Theta_{i}'] = sgd_theta.flatten()
+
+	plotCostHistory(final_cost_history)
 
 	sgd_theta_df.to_csv("sgd_weights.csv", index=False)
 	gd_theta_df.to_csv("gd_weights.csv", index=False)
