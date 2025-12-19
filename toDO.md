@@ -1,2 +1,0 @@
-- graph for cost 
-- cost for sgd
