@@ -86,8 +86,39 @@ def stochasticGradientDescent(X, y, id, alpha=0.01, epochs=10):
 				cost = (-1) * ( yi.T * np.log(h) + (1 - yi).T * np.log(1 - h) )
 				cost_history.append(cost)
 
+	return theta, cost_history
+
+def minibatchGradienDescent(X, y, id, alpha=0.01, epochs=10, batch_size=32):
+	y = yMapping(y, id)
+	m, n = X.shape
+	theta = np.zeros((n, 1))
+
+	cost_history = []
+
+	for epoch in range(epochs):
+
+		indices = np.random.permutation(m)
+		X_shuffled = X[indices]
+		y_shuffled = y[indices]
+
+		for i in range(0, m, batch_size):
+
+			X_batch = X_shuffled[i:i+batch_size]
+			y_batch = y_shuffled[i:i+batch_size]
+
+			m_batch = X_batch.shape[0]
+
+			h = hypothesis(X_batch, theta)
+			gradient = np.dot(X_batch.T, (h - y_batch)) / m_batch
+			theta = theta - ( alpha * gradient )
+
+			if (i % 50 == 0):
+				cost = (-1 / m_batch) * ( np.dot(y_batch.T, np.log(h)) + np.dot((1 - y_batch).T, np.log(1 - h)) )
+				cost_history.append(cost)
 
 	return theta, cost_history
+
+
 
 def plotCostHistory(cost_history):
 
