@@ -64,6 +64,7 @@ def stochasticGradientDescent(X, y, id, alpha=0.01, epochs=10):
 	y = yMapping(y, id)
 	m, n = X.shape
 	theta = np.zeros((n, 1))
+	decay_rate = 0.001
 
 	cost_history = []
 
@@ -72,6 +73,8 @@ def stochasticGradientDescent(X, y, id, alpha=0.01, epochs=10):
 		indices = np.random.permutation(m)
 		X_shuffled = X[indices]
 		y_shuffled = y[indices]
+
+		current_alpha = alpha / (1 + decay_rate * epoch) # Learning rate decay
 
 		for i in range(m):
 
@@ -80,7 +83,7 @@ def stochasticGradientDescent(X, y, id, alpha=0.01, epochs=10):
 
 			h = hypothesis(xi, theta)
 			gradient = np.dot(xi.T, (h - yi))
-			theta = theta - ( alpha * gradient )
+			theta = theta - ( current_alpha * gradient )
 
 			if (i % 50 == 0):
 				cost = (-1) * ( yi.T * np.log(h) + (1 - yi).T * np.log(1 - h) )
@@ -88,10 +91,11 @@ def stochasticGradientDescent(X, y, id, alpha=0.01, epochs=10):
 
 	return theta, cost_history
 
-def minibatchGradienDescent(X, y, id, alpha=0.01, epochs=10, batch_size=32):
+def minibatchGradienDescent(X, y, id, alpha=0.01, epochs=10, batch_size=16):
 	y = yMapping(y, id)
 	m, n = X.shape
 	theta = np.zeros((n, 1))
+	decay_rate = 0.001
 
 	cost_history = []
 
@@ -100,6 +104,8 @@ def minibatchGradienDescent(X, y, id, alpha=0.01, epochs=10, batch_size=32):
 		indices = np.random.permutation(m)
 		X_shuffled = X[indices]
 		y_shuffled = y[indices]
+
+		current_alpha = alpha / (1 + decay_rate * epoch)
 
 		for i in range(0, m, batch_size):
 
@@ -110,7 +116,7 @@ def minibatchGradienDescent(X, y, id, alpha=0.01, epochs=10, batch_size=32):
 
 			h = hypothesis(X_batch, theta)
 			gradient = np.dot(X_batch.T, (h - y_batch)) / m_batch
-			theta = theta - ( alpha * gradient )
+			theta = theta - ( current_alpha * gradient )
 
 			if (i % 50 == 0):
 				cost = (-1 / m_batch) * ( np.dot(y_batch.T, np.log(h)) + np.dot((1 - y_batch).T, np.log(1 - h)) )
@@ -118,23 +124,33 @@ def minibatchGradienDescent(X, y, id, alpha=0.01, epochs=10, batch_size=32):
 
 	return theta, cost_history
 
-
-
 def plotCostHistory(cost_history):
 
-	fig, axes = plt.subplots(ncols=4, nrows=2, figsize=(18, 9))
-	axes = axes.flatten()
-	methods = ['Gradient Descent', 'Stochastic Gradient Descent']
+	methods = ['Gradient Descent', 'Stochastic Gradient Descent', 'Mini-batch Gradient Descent']
 	houses = ['Gryffindor', 'Hufflepuff', 'Ravenclaw', 'Slytherin']
-	for i in range(4):
-		for j in range(2):
-			method_name = methods[j]
-			history_index = i * 2 + j
-			axes[history_index].plot(range(len(cost_history[history_index])), [cost.flatten()[0] for cost in cost_history[history_index]], color='blue')
-			axes[history_index].set_title(f'Cost History - {method_name} for {houses[i]}')
-			axes[history_index].set_xlabel('Iterations')
-			axes[history_index].set_ylabel('Cost')
-			axes[history_index].grid()
+	colors = ['blue', 'orange', 'green', 'red']
+
+	fig, axes = plt.subplots(ncols=len(methods), nrows=1, figsize=(18, 6))
+	if len(methods) == 1:
+		axes = [axes]
+
+	for j, method_name in enumerate(methods):
+		ax = axes[j]
+		for i, house in enumerate(houses):
+			history_index = j + i * len(methods)  # cost_history was appended per-house: [gd, sgd, mbgd] for each house
+			if history_index >= len(cost_history):
+				continue
+			history = cost_history[history_index]
+			if not history:
+				continue
+			ax.plot(range(len(history)), [c.flatten()[0] for c in history], label=house, color=colors[i])
+
+		ax.set_title(f'{method_name} - Cost for all houses')
+		ax.set_xlabel('Iterations')
+		ax.set_ylabel('Cost')
+		ax.grid()
+		ax.legend()
+
 	plt.tight_layout()
 	plt.show()
 
@@ -158,22 +174,25 @@ if "__main__" == __name__:
 
 	gd_theta_df = pd.DataFrame()
 	sgd_theta_df = pd.DataFrame()
+	mbgd_theta_df = pd.DataFrame()
 
 	final_cost_history = []
 
 	for i in range(4):
 		theta, cost_history = gradientDescent(X, y_column, id=i, alpha=0.01, num_iterations=10000)
 		final_cost_history.append(cost_history)
-		print("\033[30mGD Cost : " + str(cost_history[-1].flatten()[0]) + "\033[0m")
 		sgd_theta, sgd_cost_history = stochasticGradientDescent(X, y_column, id=i, alpha=0.01, epochs=10)
 		final_cost_history.append(sgd_cost_history)
-		print("\033[30mSGD Cost: " + str(sgd_cost_history[-1].flatten()[0]) + "\033[0m")
+		mbgd_theta, mbgd_cost_history = minibatchGradienDescent(X, y_column, id=i, alpha=0.01, epochs=10, batch_size=16)
+		final_cost_history.append(mbgd_cost_history)
 		gd_theta_df[f'Theta_{i}'] = theta.flatten()
 		sgd_theta_df[f'Theta_{i}'] = sgd_theta.flatten()
+		mbgd_theta_df[f'Theta_{i}'] = mbgd_theta.flatten()
 
 	plotCostHistory(final_cost_history)
 
 	sgd_theta_df.to_csv("sgd_weights.csv", index=False)
 	gd_theta_df.to_csv("gd_weights.csv", index=False)
+	mbgd_theta_df.to_csv("mbgd_weights.csv", index=False)
 
-	print("\033[32mTraining completed. Weights saved to 'sgd_weights.csv' and 'gd_weights.csv'.\033[0m")
+	print("\033[32mTraining completed. Weights saved to 'sgd_weights.csv', 'gd_weights.csv', and 'mbgd_weights.csv'.\033[0m")
