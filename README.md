@@ -225,7 +225,7 @@ Accuracy: 98.50%
 | `make histogram` | Show histograms |
 | `make scatter` | Show scatter plots |
 | `make pair` | Generate and save pair plot |
-| `make clean` | Remove split files, weights, and predictions, describe output |
+| `make clean` | Remove split files, weights, predictions and describe output |
 | `make clean_all` | `clean` + remove  pair plot |
 | `make re` | `clean` then `all` |
 
