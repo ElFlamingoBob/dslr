@@ -163,6 +163,9 @@ Four binary classifiers are trained — one per house. Each classifier learns to
 - **Binary cross-entropy loss**
 - **Feature normalisation** using pre-computed mean and standard deviation
 
+The following features are excluded from training (low signal or near-constant):
+`Care of Magical Creatures`, `Arithmancy`, `Potions`, `Astronomy`.
+
 Prediction selects the house whose classifier produces the highest probability.
 
 ### Gradient Descent Variants
@@ -177,7 +180,7 @@ All three optimisers share the same hypothesis and cost function, differing only
 - **SGD** — gradient computed one sample at a time; shuffles data each epoch; applies learning-rate decay
 - **MBGD** — gradient computed over batches of 16; shuffles data each epoch; applies learning-rate decay
 
-After training, weights are saved to `gd_weights.csv`, `sgd_weights.csv`, and `mbgd_weights.csv`.
+After training, weights are saved to `gd_weights.csv`, `sgd_weights.csv`, and `mbgd_weights.csv`, and a **cost-history plot** is displayed showing convergence for each optimiser and house.
 
 ---
 
