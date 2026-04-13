@@ -40,7 +40,7 @@ dslr/
 │   ├── histogram.py           # Distribution histograms per house
 │   ├── scatter_plot.py        # Most / least correlated feature scatter plots
 │   ├── pair_plot.py           # Full pair-plot saved as pair_plot.png
-│   ├── split_training.py      # 95/5 train–validation split
+│   ├── split_training.py      # 85/15 train–validation split
 │   ├── logreg_train.py        # Logistic regression training (GD, SGD, MBGD)
 │   ├── logreg_predict.py      # House prediction from saved weights
 │   └── evaluation.py         # Accuracy evaluation against ground truth
@@ -78,7 +78,7 @@ make all
 ### Step by Step
 
 ```bash
-# 1. Split dataset_train.csv into 95 % training / 5 % validation sets
+# 1. Split dataset_train.csv into 85 % training / 15 % validation sets
 make split
 
 # 2. Print descriptive statistics on the training split
@@ -225,12 +225,7 @@ Accuracy: 98.50%
 | `make histogram` | Show histograms |
 | `make scatter` | Show scatter plots |
 | `make pair` | Generate and save pair plot |
-| `make clean` | Remove split files, weights, and predictions |
-| `make clean_all` | `clean` + remove describe output and pair plot |
+| `make clean` | Remove split files, weights, and predictions, describe output |
+| `make clean_all` | `clean` + remove  pair plot |
 | `make re` | `clean` then `all` |
 
----
-
-## 📄 License
-
-This project is part of the [42 School](https://42.fr) curriculum and is intended for educational purposes.
