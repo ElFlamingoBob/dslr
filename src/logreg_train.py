@@ -41,7 +41,7 @@ def yMapping(y_column, id):
 			exit()
 	return y_column.map(mapping).to_numpy().reshape(-1, 1)
 
-def gradientDescent(X, y, id, alpha=0.01, num_iterations=10000):
+def gradientDescent(X, y, id, alpha=0.01, num_iterations=4000):
 	y = yMapping(y, id)
 	m, n = X.shape
 	theta = np.zeros((n, 1))
@@ -179,7 +179,7 @@ if "__main__" == __name__:
 	final_cost_history = []
 
 	for i in range(4):
-		theta, cost_history = gradientDescent(X, y_column, id=i, alpha=0.01, num_iterations=10000)
+		theta, cost_history = gradientDescent(X, y_column, id=i, alpha=0.01, num_iterations=4000)
 		final_cost_history.append(cost_history)
 		sgd_theta, sgd_cost_history = stochasticGradientDescent(X, y_column, id=i, alpha=0.01, epochs=10)
 		final_cost_history.append(sgd_cost_history)
