@@ -1,4 +1,3 @@
-import pandas as pd
 import numpy as np
 
 from describe import checkInput, readCSV
@@ -10,7 +9,7 @@ if "__main__" == __name__:
 	np.random.shuffle(indices)
 	training_data = training_data.iloc[indices].reset_index(drop=True)
 
-	split_id = int(len(training_data) * 0.95)
+	split_id = int(len(training_data) * 0.80)
 	training_set = training_data.iloc[:split_id].reset_index(drop=True)
 	validation_set = training_data.iloc[split_id:].reset_index(drop=True)
 

@@ -57,10 +57,10 @@ pair:
 	@$(PYTHON) $(SRC_DIR)/pair_plot.py $(TRAIN_DATA)
 
 clean:
-	@rm -f $(SPLIT_TRAIN) $(SPLIT_VAL) $(GD_WEIGHTS) $(SGD_WEIGHTS) $(MBGD_WEIGHTS) $(PREDICTIONS)
+	@rm -f $(SPLIT_TRAIN) $(SPLIT_VAL) $(GD_WEIGHTS) $(SGD_WEIGHTS) $(MBGD_WEIGHTS) $(PREDICTIONS) $(DESCRIBE_OUT)
 	@rm -rf $(SRC_DIR)/__pycache__
 
 clean_all: clean
-	@rm -f $(DESCRIBE_OUT) pair_plot.png
+	@rm -f pair_plot.png
 
 re: clean all
