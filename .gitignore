@@ -1,0 +1,8 @@
+datasets/training_set.csv
+datasets/validation_set.csv
+describe_output.csv
+gd_weights.csv
+houses.csv
+mbgd_weights.csv
+sgd_weights.csv
+src/__pycache__/
