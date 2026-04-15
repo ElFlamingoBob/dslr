@@ -103,10 +103,8 @@ def describeData(data):
 				describer.at[key, column] = value
 	return describer
 
-def main():
+
+if __name__ == "__main__":
 	describer = describeData(readCSV(checkInput("describe")))
 	describer.to_csv("describe_output.csv")
 	print(describer)
-
-if __name__ == "__main__":
-	main()

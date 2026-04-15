@@ -6,13 +6,13 @@ import seaborn as sns
 import math
 from describe import checkInput, readCSV
 
-def main():
+if "__main__" == __name__:
 	data = readCSV(checkInput("histogram"))
 
 	numeric_columns = [col for col in data.columns if (data[col].dtype == 'float64' or data[col].dtype == 'int64') and not data[col].isna().all() and col != 'Index']
 	if len(numeric_columns) == 0:
 		logging.error("No numeric columns found in the dataset to plot histograms.")
-		return
+		exit(1)
 	
 	cols = min(5, len(numeric_columns))
 	rows = math.ceil(len(numeric_columns) / cols)
@@ -35,6 +35,4 @@ def main():
 
 	plt.tight_layout()
 	plt.show()
-
-if "__main__" == __name__:
-	main()
+	
