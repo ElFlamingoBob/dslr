@@ -378,8 +378,8 @@ The result is multiplied by 100 and printed as a percentage, e.g. `98.50%`.
 
 The full labelled dataset of *N* rows is partitioned into:
 
-$$N_{\text{train}} = \lfloor 0.85 \times N \rfloor \quad \text{(first 85 % of shuffled rows)}$$
-$$N_{\text{val}} = N - N_{\text{train}} \quad \text{(remaining 15 % of shuffled rows)}$$
+$$N_{\text{train}} = \lfloor 0.85 \times N \rfloor \quad \text{(first 85 \% of shuffled rows)}$$
+$$N_{\text{val}} = N - N_{\text{train}} \quad \text{(remaining 15 \% of shuffled rows)}$$
 
 Before splitting, the dataset is **randomly shuffled** using a random permutation of row indices.  This ensures that the split is unbiased and that neither subset contains systematic ordering artefacts from the original file.
 
